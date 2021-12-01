@@ -35,7 +35,10 @@ private:
 public:
     MiniGit();
     ~MiniGit();
-
+    
+    bool isGoodMessage(string commitMessage);
+    bool traverseSLL(string fileName);
+    bool searchDirectory(string fileName);
     void init(int hashtablesize);
     void add(string fileName);
     void rm(string fileName);

@@ -13,7 +13,8 @@ HashNode* HashTable::createNode(string key, HashNode* next)
 
 HashTable::HashTable(int bsize)
 {
-   
+    tableSize = bsize;
+    table = new HashNode*[tableSize];
 }
 
 //function to calculate hash function
@@ -60,4 +61,4 @@ bool HashTable::insertItem(string key, int cNum)
 void HashTable::printTable()
 {
 
- }
+}

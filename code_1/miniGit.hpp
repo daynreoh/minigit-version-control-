@@ -36,6 +36,10 @@ public:
     MiniGit();
     ~MiniGit();
     
+    
+    bool fileInDirectory(string fileName);
+    bool filesAreSame(string fileName, string directoryFileName);
+    bool hasSameCommitMessage(string commitMessage);
     bool isGoodMessage(string commitMessage);
     bool traverseSLL(string fileName);
     bool searchDirectory(string fileName);

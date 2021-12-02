@@ -94,19 +94,31 @@ int main(int argc, char* argv[]) {
                 // commit changes
                 string commitMessage;
                 cout << "please enter a commit message (at most 3 words): ";
-                cin >> commitMessage;
-                
-               if(isGoodMessage(commitMessage)
-               {
-                   
-               }
-                while(!isGoodMessage(commitMessage))
+                cin.ignore();
+                getline(cin, commitMessage);
+
+                while(!repository->isGoodMessage(commitMessage))
                 {
                     cout << "message was more than 3 words, try again." << endl;
+
+                    cout << "please enter a commit message (at most 3 words): ";
+                    cin.ignore();
+                    getline(cin, commitMessage);
+                }
+                
+                while(repository->hasSameCommitMessage(commitMessage))
+                {
+                    // true, then duplicate
+                    cout << "commit message already exists, try a different one." << endl;
                     
                     cout << "please enter a commit message (at most 3 words): ";
-                    cin >> commitMessage;
+                    cin.ignore();
+                    getline(cin, commitMessage);
                 }
+                      
+                repository->commit(commitMessage);
+               
+               
                 
                 
                 
@@ -122,6 +134,19 @@ int main(int argc, char* argv[]) {
             else if(numOperation == 7)
             {
                 isSeven = true;
+            }
+            else if(numOperation == 8)
+            {
+                string fileName = "f1.txt";
+                string fileName2 = "f2.txt";
+                if(repository->filesAreSame(fileName, fileName2))
+                {
+                    cout << "files are the same!" << endl;
+                }
+                else 
+                {
+                    cout << "files are not the same..." << endl;
+                }
             }
             else
             {

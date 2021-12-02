@@ -21,7 +21,6 @@ MiniGit::~MiniGit() {
 }
 
 void MiniGit::init(int hashtablesize) {
-    fs::create_directory(".minigit");
     
     BranchNode* repoHead = new BranchNode;
     commitHead = repoHead;
@@ -140,31 +139,129 @@ void MiniGit::search(string key)
 
 
 string MiniGit::commit(string msg) {
+    
+    
+    
+    
+    
+    
     return " "; //should return the commitID of the commited DLL node
+}
+
+bool MiniGit::fileInDirectory(string fileName)
+{
+    //traverse SLL 
+    FileNode* crawler = commitHead->fileHead;
+    string versionFile;
+    string fileName2;
+    
+    // should look like: ./minigit/f1.txt__00
+    
+    // this traverses through the current directory
+    while(crawler != nullptr)
+    {
+        fileName2 = "./minigit/" + crawler->name;    
+
+        // this should just test the input file name not the version file.. so like f1.txt
+        // tests to see if the file exists in .minigit
+        if(fs::exists(fileName2))
+        {
+            // check whether the file has changed in version
+            // do this by opening the file, and reading line by line to make sure every line matches up
+            // versionFile = “./minigit/“ + crawler->name + ”__” + to_string(crawler->version);
+
+            if(filesAreSame(fileName, fileName2))
+            {
+                // do nothing because the file version is updated
+            }
+            else 
+            {
+                // copy file from current directory to .minigit directory
+            }
+        }
+        else
+        {
+            // copy the file from current directory to minigit
+        }
+    }
+}
+
+ 
+
+bool MiniGit::filesAreSame(string fileName, string directoryFileName)
+{
+    ifstream currentFile (fileName);
+    ifstream directoryFile (directoryFileName);
+    bool isSame = false;
+    
+    if(currentFile.is_open() && directoryFile.is_open())
+    {
+        isSame = true;
+        string currentLine;
+        string directoryLine;
+        
+        while(getline(currentFile, currentLine) && getline(directoryFile, directoryLine))
+        {            
+            if(currentLine != directoryLine)
+            {
+                isSame = false;
+            }
+        }
+    }
+    
+    return isSame;
+    
 }
 
 bool MiniGit::isGoodMessage(string commitMessage)
 {
     // Ex: "computer fun science j"
-    // Ex: "a b c"
     // length: 12
-    int whiteSpace = 0;
-    bool previousWhite = false;
     
-    for(int i = 0; i < commitMessage.length(); i++)
+    int whiteSpace = 0;
+    bool previousWhite = true;
+    
+    for(unsigned int i = 0; i < commitMessage.length(); i++)
     {
-        if(commitMessage.at(i) == " " && !previousWhite)
+        if(commitMessage.at(i) == ' ' && !previousWhite)
         {
             whiteSpace++;
             previousWhite = true;
         }
-        else if(commitMessage.at(i) != " ")
+        else if(commitMessage.at(i) != ' ')
         {
             previousWhite = false;
         }
     }
     
-    return (whiteSpace > 2)
+    if(whiteSpace > 2)
+    {
+        return false;
+    }
+    else 
+    {
+        return true;
+    }
+    //return (whiteSpace > 2);
+}
+
+bool MiniGit::hasSameCommitMessage(string commitMessage)
+{
+    // traverse through the DLL and check to see if the commit message
+    // of any previous commit is the exact same
+    
+    bool isDuplicate = false;
+    BranchNode* crawler = commitHead;
+    
+    while(crawler != nullptr)
+    {
+        if(crawler->commitMessage == commitMessage)
+        {
+            isDuplicate = true;
+        }
+        crawler = crawler->next;
+    }
+    return isDuplicate;
 }
 
 void MiniGit::checkout(string commitID) {

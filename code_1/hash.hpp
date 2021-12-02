@@ -26,7 +26,7 @@ public:
     HashTable(int bsize);  // Constructor
 
     // inserts a key into hash table
-    void insertItem(string key, int commitNumber);
+    bool insertItem(string key, int commitNumber);
 
     // hash function to map values to key
     unsigned int hashFunction(string key);

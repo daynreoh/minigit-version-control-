@@ -115,15 +115,12 @@ int main(int argc, char* argv[]) {
                     cin.ignore();
                     getline(cin, commitMessage);
                 }
-                      
+                
                 string commitID = repository->commit(commitMessage);
+                cout << commitID << endl;
                 
                 cout << "commit successful: " << commitID << endl;
-               
-               
-                
-                
-                
+                 
             }
             else if(numOperation == 5)
             {
@@ -131,7 +128,11 @@ int main(int argc, char* argv[]) {
             }
             else if(numOperation == 6)
             {
-                // search hash table
+                string searchKey; 
+                cout << "Enter the search key: ";
+                cin >> searchKey;
+                
+                repository->printCommitNumbers(searchKey);
             }
             else if(numOperation == 7)
             {

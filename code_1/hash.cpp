@@ -7,7 +7,7 @@ using namespace std;
 
 HashNode* HashTable::createNode(string key, HashNode* next)
 {
-    HashNode* nw = NULL;
+    HashNode* nw = new HashNode;
     nw->key = key;
     nw->next = next;
     return nw;
@@ -26,15 +26,7 @@ HashTable::HashTable(int bsize)
 //function to calculate hash function
 unsigned int HashTable::hashFunction(string s)
 {
-    int sum = 0;
-    int index = 0;
-    for(string::size_type i = 0; i < s.length(); i++)
-    {
-        sum += s[i];
-    }
-    
-    index = sum % tableSize;
-    return index;
+    return s.size() % tableSize;
 }
 
 // TODO Complete this function
@@ -60,23 +52,25 @@ HashNode* HashTable::searchItem(string key)
 //TODO Complete this function
 //function to insert
 // int cNum = chainNumber? 
-void HashTable::insertItem(string key, int commitNumber)
+bool HashTable::insertItem(string key, int commitNumber)
 {
-    int index;
+    int index = hashFunction(key);
     HashNode* currNode = searchItem(key);
     if(currNode != nullptr)
     {
         currNode->commitNums.push_back(commitNumber);
+        return true;
     }
     else 
     {
-        HashNode* newNode = new HashNode;
-        newNode->key = key;
+        HashNode* newNode = createNode(key, table[index]);
+
         newNode->commitNums.push_back(commitNumber);
-        
-        index = hashFunction(key);
         table[index] = newNode;
+                                       
+        return true;
     }
+    return false;
 }
 
 

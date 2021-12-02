@@ -28,7 +28,7 @@ void MiniGit::init(int hashtablesize) {
     commitHead->fileHead = nullptr;
     commitHead->next = nullptr;
     commitHead->previous = nullptr;
-    commitHead->commitID = 0;
+    commitHead->commitID = 00;
     
     HashTable* repoTable = new HashTable(5);
     ht = repoTable;
@@ -131,6 +131,26 @@ void MiniGit::printSearchTable()
      ht->printTable();
 }
 
+void MiniGit::printCommitNumbers(string searchKey)
+{
+    HashNode* hashNode = ht->searchItem(searchKey);
+    
+    if(hashNode != nullptr)
+    {
+        cout << "commit numbers for " << searchKey << ": ";
+
+        for(unsigned int i = 0; i < hashNode->commitNums.size() - 1; i++)
+        {
+            cout << hashNode->commitNums.at(i) << ", ";
+        }
+        cout << hashNode->commitNums.at(hashNode->commitNums.size() - 1) << endl;
+    }
+    else 
+    {
+        cout << "key does not exist in the hash table, please try again." << endl;
+    }    
+}
+
 
 void MiniGit::search(string key)
 {
@@ -140,7 +160,7 @@ void MiniGit::search(string key)
 
 string MiniGit::commit(string msg) {
     
-    parseCommitMessage(msg);
+    bool useless = parseCommitMessage(msg);
     BranchNode* parse = commitHead;
     
     while(parse->next != nullptr)
@@ -196,18 +216,23 @@ string MiniGit::commit(string msg) {
     DLLcopy->previous = commitHead;
     
     //should return the commitID of the commited DLL node    
-    return "" + commitHead->commitID; 
+    return "" + parse->commitID; 
 }
 
-void MiniGit::parseCommitMessage(string commitMessage)
-{
+bool MiniGit::parseCommitMessage(string commitMessage)
+{   
+    commitMessage += " ";
     int commitNumber = commitHead->commitID;
     string word = "";
+    int space = 0;
+    bool isTrue = true;
+    
     for(unsigned int i = 0; i < commitMessage.length(); i++)
     {
         if(commitMessage.at(i) == ' ')
         {
-            ht->insertItem(word, commitNumber);
+            space++;
+            isTrue = ht->insertItem(word, commitNumber);
             word = "";
         }
         else 
@@ -216,7 +241,12 @@ void MiniGit::parseCommitMessage(string commitMessage)
         }
         
     }
+    if(space == 0)
+    {
+        isTrue = ht->insertItem(word, commitNumber);
+    }
     
+    return isTrue;
 }
 
 // write this traversal assuming that it will only handle one file at a time and it won't traverse the SLL
@@ -244,15 +274,7 @@ FileNode* MiniGit::fileInDirectory(FileNode* file)
             copy->version = file->version++;
             copy->next = nullptr;
             
-            fstream myFileF;
-            myFileF.open(fileName);
-            ostringstream myFileO;
-            myFileO << myFileF.rdbuf();
-            
-            ofstream newFile (versionFile);
-            newFile << myFileO.str();
-            newFile.close();
-            myFileF.close();
+            addToDirectory(file->name, versionFile);
             
             return copy;
         }
@@ -267,18 +289,28 @@ FileNode* MiniGit::fileInDirectory(FileNode* file)
         copyCat->version = file->version++;
         copyCat->next = nullptr;
         
-        fstream myFileF;
-        myFileF.open(fileName);
-        ostringstream myFileO;
-        myFileO << myFileF.rdbuf();
-
-        ofstream newFile (versionFile);
-        newFile << myFileO.str();
-        newFile.close();
-        myFileF.close();
+        addToDirectory(file->name, versionFile);
         
         return copyCat;
     }
+}
+
+void MiniGit::addToDirectory(string fileName, string directoryFile)
+{
+    fstream currentFile (fileName);
+    ofstream newFile;
+    newFile.open(directoryFile);
+    
+    string currentLine;
+    
+    if(currentFile.is_open() && newFile.is_open())
+    {
+        while(getline(currentFile, currentLine))
+        {
+            newFile << currentLine;
+        }
+    }
+    
 }
 
  

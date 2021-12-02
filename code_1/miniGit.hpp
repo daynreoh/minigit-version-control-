@@ -36,8 +36,8 @@ public:
     MiniGit();
     ~MiniGit();
     
-    
-    bool fileInDirectory(string fileName);
+    void parseCommitMessage(string commitMessage);
+    FileNode* fileInDirectory(FileNode* file);
     bool filesAreSame(string fileName, string directoryFileName);
     bool hasSameCommitMessage(string commitMessage);
     bool isGoodMessage(string commitMessage);

@@ -13,4 +13,7 @@ using namespace std;
 std::string exec(const char* cmd);
 std::string readFileIntoString(std::string fileName);
 string test_insert(string arr[], int len, int tabSize);
+
+// change the below one once searchItem in hash is complete.
+string test_searchItem(string arr[], int len, int tabSize);
 #endif // TEST_H__

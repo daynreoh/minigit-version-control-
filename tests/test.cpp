@@ -90,3 +90,25 @@ TEST_F(test_x, TestInsert){
 }
 
 //TODO add more tests for insert. Design tests for search from hashTable.
+
+// once serach is complete, change the below test to match the search.
+
+TEST_F(test_x, TestSearchItem)
+{
+    string result;
+    string expected;
+    
+    int len = 5;
+    
+    string commits[] = {"computer", "science", "fun", "difficult", "science"};
+    int tabSize = 5;
+    
+    result = test_searchItem(commits, len, tabSize);
+    
+    // expected = "0|| science(1,4,) \n1|| \n2|| \n3|| \n4|| difficult(3)
+    expected = "";
+    
+    ASSERT_EQ(expected, result);
+    add_points_to_grade(6);
+    
+}

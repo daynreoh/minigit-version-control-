@@ -140,49 +140,144 @@ void MiniGit::search(string key)
 
 string MiniGit::commit(string msg) {
     
+    parseCommitMessage(msg);
+    BranchNode* parse = commitHead;
     
-    
-    
-    
-    
-    return " "; //should return the commitID of the commited DLL node
-}
+    while(parse->next != nullptr)
+    {
+        parse = parse->next;
+    }
 
-bool MiniGit::fileInDirectory(string fileName)
-{
-    //traverse SLL 
-    FileNode* crawler = commitHead->fileHead;
-    string versionFile;
-    string fileName2;
+    // this will crawl through the SLL
+    FileNode* crawler = parse->fileHead;
     
-    // should look like: ./minigit/f1.txt__00
+    // this will represent the copied file from fileInDirectory
+    FileNode* currFile; 
     
-    // this traverses through the current directory
+    // creates a copy node for DLL commit
+    BranchNode* DLLcopy = new BranchNode;
+    DLLcopy->commitID = parse->commitID++;
+    
     while(crawler != nullptr)
     {
-        fileName2 = "./minigit/" + crawler->name;    
-
-        // this should just test the input file name not the version file.. so like f1.txt
-        // tests to see if the file exists in .minigit
-        if(fs::exists(fileName2))
+        currFile = fileInDirectory(crawler);
+        if(currFile == crawler)
         {
-            // check whether the file has changed in version
-            // do this by opening the file, and reading line by line to make sure every line matches up
-            // versionFile = “./minigit/“ + crawler->name + ”__” + to_string(crawler->version);
-
-            if(filesAreSame(fileName, fileName2))
+           // do nothing 
+        }
+        // means that the crawler file got copied to the .minigit directory
+        // somehow need to assign a next pointer
+        else
+        {
+            
+            if(DLLcopy->fileHead == nullptr)
             {
-                // do nothing because the file version is updated
+                DLLcopy->fileHead = currFile;
+                currFile->next = nullptr;
             }
             else 
             {
-                // copy file from current directory to .minigit directory
+                // f1.txt --> f2.txt --> f3.txt --> f4.txt --> nullptr
+                FileNode* DLLcrawler = DLLcopy->fileHead;
+                
+                while(DLLcrawler->next != nullptr)
+                {
+                    DLLcrawler = DLLcrawler->next;
+                }
+                
+                DLLcrawler->next = currFile;
+                currFile->next = nullptr;
             }
         }
-        else
+        crawler = crawler->next;
+    }
+    
+    commitHead->next = DLLcopy;
+    DLLcopy->previous = commitHead;
+    
+    //should return the commitID of the commited DLL node    
+    return "" + commitHead->commitID; 
+}
+
+void MiniGit::parseCommitMessage(string commitMessage)
+{
+    int commitNumber = commitHead->commitID;
+    string word = "";
+    for(unsigned int i = 0; i < commitMessage.length(); i++)
+    {
+        if(commitMessage.at(i) == ' ')
         {
-            // copy the file from current directory to minigit
+            ht->insertItem(word, commitNumber);
+            word = "";
         }
+        else 
+        {
+            word += commitMessage.at(i);
+        }
+        
+    }
+    
+}
+
+// write this traversal assuming that it will only handle one file at a time and it won't traverse the SLL
+FileNode* MiniGit::fileInDirectory(FileNode* file)
+{   
+    
+    string versionFile = "./minigit/" + file->name + "__" + to_string(file->version);
+    // should look like: ./minigit/f1.txt__00
+    
+    // creates the filename for .minigit directory
+    string fileName = file->name;
+    string fileName2 = "./minigit/" + fileName; 
+ 
+
+    // tests to see if the file exists in .minigit
+    if(fs::exists(versionFile))
+    {
+        // check whether the file has changed in version
+        // do this by opening the file, and reading line by line to make sure every line matches up
+        if(!filesAreSame(fileName, versionFile))
+        {
+            // COPY: the file from the current directory to the .minigit directory
+            FileNode* copy = new FileNode;
+            copy->name = fileName + "__" + to_string(file->version++);
+            copy->version = file->version++;
+            copy->next = nullptr;
+            
+            fstream myFileF;
+            myFileF.open(fileName);
+            ostringstream myFileO;
+            myFileO << myFileF.rdbuf();
+            
+            ofstream newFile (versionFile);
+            newFile << myFileO.str();
+            newFile.close();
+            myFileF.close();
+            
+            return copy;
+        }
+        
+        // do nothing
+        return file;
+    }
+    else
+    {
+        FileNode* copyCat = new FileNode;
+        copyCat->name = file->name + "__" + to_string(file->version++);
+        copyCat->version = file->version++;
+        copyCat->next = nullptr;
+        
+        fstream myFileF;
+        myFileF.open(fileName);
+        ostringstream myFileO;
+        myFileO << myFileF.rdbuf();
+
+        ofstream newFile (versionFile);
+        newFile << myFileO.str();
+        newFile.close();
+        myFileF.close();
+        
+        return copyCat;
     }
 }
 
@@ -208,6 +303,9 @@ bool MiniGit::filesAreSame(string fileName, string directoryFileName)
             }
         }
     }
+    
+    currentFile.close();
+    directoryFile.close();
     
     return isSame;
     

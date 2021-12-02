@@ -116,7 +116,9 @@ int main(int argc, char* argv[]) {
                     getline(cin, commitMessage);
                 }
                       
-                repository->commit(commitMessage);
+                string commitID = repository->commit(commitMessage);
+                
+                cout << "commit successful: " << commitID << endl;
                
                
                 
@@ -134,19 +136,6 @@ int main(int argc, char* argv[]) {
             else if(numOperation == 7)
             {
                 isSeven = true;
-            }
-            else if(numOperation == 8)
-            {
-                string fileName = "f1.txt";
-                string fileName2 = "f2.txt";
-                if(repository->filesAreSame(fileName, fileName2))
-                {
-                    cout << "files are the same!" << endl;
-                }
-                else 
-                {
-                    cout << "files are not the same..." << endl;
-                }
             }
             else
             {

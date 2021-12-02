@@ -8,6 +8,8 @@ using namespace std;
 HashNode* HashTable::createNode(string key, HashNode* next)
 {
     HashNode* nw = NULL;
+    nw->key = key;
+    nw->next = next;
     return nw;
 }
 
@@ -15,33 +17,66 @@ HashTable::HashTable(int bsize)
 {
     tableSize = bsize;
     table = new HashNode*[tableSize];
+    for(int i = 0; i < bsize; i++)
+    {
+        table[i] = nullptr;
+    }
 }
 
 //function to calculate hash function
 unsigned int HashTable::hashFunction(string s)
 {
+    int sum = 0;
+    int index = 0;
+    for(string::size_type i = 0; i < s.length(); i++)
+    {
+        sum += s[i];
+    }
     
-    return 0;
+    index = sum % tableSize;
+    return index;
 }
 
 // TODO Complete this function
 //function to search
 HashNode* HashTable::searchItem(string key)
 {
-   
+    int index = hashFunction(key);
+    HashNode* temp = table[index];
+    
+    while(temp)
+    {
+        if(temp->key == key)
+        {
+            return temp;
+        }
+        temp = temp->next;
+    }
 
-    //TODO
-    return NULL;
+    return nullptr;
     
 }
 
 //TODO Complete this function
 //function to insert
-bool HashTable::insertItem(string key, int cNum)
+// int cNum = chainNumber? 
+void HashTable::insertItem(string key, int commitNumber)
 {
-    
-    //TODO
-    return false;
+    int index;
+    HashNode* currNode = searchItem(key);
+    if(currNode != nullptr)
+    {
+        currNode->commitNums.push_back(commitNumber);
+    }
+    else 
+    {
+        HashNode* newNode = new HashNode;
+        newNode->key = key;
+        newNode->commitNums.push_back(commitNumber);
+        
+        index = hashFunction(key);
+        table[index] = newNode;
+    }
 }
 
 
@@ -60,5 +95,9 @@ bool HashTable::insertItem(string key, int cNum)
 */
 void HashTable::printTable()
 {
-
+    for(int i = 0; i < 5; i++)
+    {
+        cout << table[i] << ",";
+    }
+    cout << endl;
 }

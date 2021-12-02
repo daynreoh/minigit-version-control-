@@ -43,3 +43,18 @@ string test_insert(string arr[], int len, int tabSize)
     string output = testing::internal::GetCapturedStdout();
     return output;
 }
+
+string test_searchItem(string arr[], int len, int tabSize)
+{
+    testing::internal::CaptureStdout();
+    HashTable* ht = new HashTable(tabSize);
+    
+    for(int i = 0; i < len; i++)
+    {
+        ht->searchItem(arr[i]);
+    }
+    
+    ht->printTable();
+    string output = testing::internal::GetCapturedStdout();
+    return output;
+}

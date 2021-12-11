@@ -23,6 +23,14 @@ HashTable::HashTable(int bsize)
     }
 }
 
+HashTable::~HashTable()
+{
+    for(int i = 0; i < tableSize; i++)
+    {
+        delete table[i];
+    }
+}
+
 //function to calculate hash function
 unsigned int HashTable::hashFunction(string s)
 {
@@ -36,7 +44,7 @@ HashNode* HashTable::searchItem(string key)
     int index = hashFunction(key);
     HashNode* temp = table[index];
     
-    while(temp)
+    while(temp != nullptr)
     {
         if(temp->key == key)
         {
@@ -70,7 +78,6 @@ bool HashTable::insertItem(string key, int commitNumber)
                                        
         return true;
     }
-    return false;
 }
 
 
@@ -91,7 +98,35 @@ void HashTable::printTable()
 {
     for(int i = 0; i < 5; i++)
     {
-        cout << table[i] << ",";
+        cout << i << " || ";
+        
+        HashNode* crawler = table[i];
+        if(crawler != nullptr)
+        {
+            while(crawler->next != nullptr)
+            {
+                cout << printHashNode(crawler->key) << " --> ";
+                crawler = crawler->next;
+            }
+            cout << printHashNode(crawler->key) << endl;
+        }
+        else 
+        {
+            cout << endl;
+        }
     }
-    cout << endl;
+}
+
+string HashTable::printHashNode(string searchKey)
+{
+    HashNode* hashNode = searchItem(searchKey);
+    string finalProduct = searchKey + "(";
+    
+    for(unsigned int i = 0; i < hashNode->commitNums.size() - 1; i++)
+    {
+        finalProduct += "" + to_string(hashNode->commitNums.at(i)) + ", ";
+    }
+    finalProduct += "" + to_string(hashNode->commitNums.at(hashNode->commitNums.size() - 1)) + ")";
+    
+    return finalProduct;
 }

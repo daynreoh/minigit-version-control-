@@ -116,15 +116,47 @@ int main(int argc, char* argv[]) {
                     getline(cin, commitMessage);
                 }
                 
-                string commitID = repository->commit(commitMessage);
-                cout << commitID << endl;
-                
-                cout << "commit successful: " << commitID << endl;
+                int commitID = repository->commit(commitMessage);
+               
+                if(commitID == -1)
+                {
+                    cout << "No file has been modified, commit unsuccessful" << endl;
+                }
+                else 
+                {
+                    cout << "commit successful: " << commitID << endl << endl;
+                    repository->printHashTable();
+                }
                  
             }
             else if(numOperation == 5)
             {
-                // checkout 
+                string commitNumber;
+                cout << "Please enter a commit number: ";
+                cin >> commitNumber;
+                
+                if(repository->searchCommitID(commitNumber))
+                {
+                    string input;
+                    cout << "Warning: you will lose your local changes if you check out a"
+                       << " different version before committing." << endl;
+                    cout << "Please type \"yes\" to continue: ";
+                    cin >> input;
+                    
+                    if(input == "yes")
+                    {
+                        repository->checkout(commitNumber);
+                    }
+                    else 
+                    {
+                        cout << "you have indicated you did not wish to continue." << endl;
+                    }
+                    
+                }
+                else 
+                {
+                    cout << "This commit number does not exist, please try again." << endl;
+                }
             }
             else if(numOperation == 6)
             {
@@ -153,7 +185,7 @@ int main(int argc, char* argv[]) {
         }
         
     }
-   
+    delete repository;
     return 0;
 }
 

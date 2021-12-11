@@ -36,9 +36,13 @@ public:
     MiniGit();
     ~MiniGit();
     
+    bool noChanges(FileNode* SLLhead);
+    void copyFromRevert(string miniGitName, string currentName);
+    void copyDirectoryFiles(BranchNode* revertDLL);
+    bool searchCommitID(string commitID);
     void printCommitNumbers(string searchKey);
-    void addToDirectory(string fileName, string directoryFile);
-    bool parseCommitMessage(string commitMessage);
+    void addToDirectory(FileNode* file);
+    bool parseCommitMessage(string commitMessage, int commitID);
     FileNode* fileInDirectory(FileNode* file);
     bool filesAreSame(string fileName, string directoryFileName);
     bool hasSameCommitMessage(string commitMessage);
@@ -48,10 +52,9 @@ public:
     void init(int hashtablesize);
     void add(string fileName);
     void rm(string fileName);
-    void search(string key);
-    string commit(string msg);
+    int commit(string msg);
     void checkout(string commitID);
-    void printSearchTable();
+    void printHashTable();
     
     
 };

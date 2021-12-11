@@ -24,7 +24,8 @@ class HashTable
      HashNode* createNode(string key, HashNode* next);
 public:
     HashTable(int bsize);  // Constructor
-
+    ~HashTable();
+    
     // inserts a key into hash table
     bool insertItem(string key, int commitNumber);
 
@@ -34,6 +35,8 @@ public:
     void printTable();
 
     HashNode* searchItem(string key);
+    
+    string printHashNode(string searchKey);
 };
 
 #endif

@@ -1,3 +1,9 @@
-# CSCI 2275 – Data Structures - Final Project
+Original Implementation
 
-Please include a thorough description of your program's functionality. Imagine that you are publishing this for users who know nothing about this project. **Also, include the names of the team-members/authors**. 
+This project is a mini version control system that replicates some of the functionality of Git and GitHub. The project works when the user is in a directory that contains files that they want to create a repository with. The program will prompt the user with 6 different functions that it can choose from. The user should always start by initializing the repository, which will create a .minigit directory within the user's current directory and will also initialize a doulby and singly linked list that will keep track of the commits of this repository. The user will then be prompted again to choose a function. They can add a file, remove a file, commit their changes, and checkout the files within a previous commit. 
+
+Project Backend Setup
+
+The basis of this version control system is operated using a doubly linked list (DLL) and singly linked lists (SLL) attached to every DLL node. The DLL represents each commit that has been made within the repository. When the repository gets initialized a DLL is created and the first node is assigned with a commitID of 0 representing the first commit of the repository. The commit functions are represented by a DLL function because in order for the checkout function to work, the program must be able to access the previous and next functions within the linked list (more on that later). Within each DLL, there will be an attached SLL which will keep track of all the files that have been added to that commit version. If the user prompts a commit, the DLL will add a node, representing a new commit then wll copy all the contents of the SLL from the previous commit over tothe new commit in order to keep the user's progress. 
+
+  Add Function: If the user chooses to add a file to the repository, the program will begin by traversing 

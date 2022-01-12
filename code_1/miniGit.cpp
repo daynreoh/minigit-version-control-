@@ -131,9 +131,10 @@ void MiniGit::rm(string fileName) {
     // f1.txt --> f2.txt --> f3.txt --> f4.txt --> nullptr
     // previous = f2.txt
     // crawler = f3.txt
+    
     BranchNode* DLLcrawler = commitHead;
     
-    while(DLLcrawler != nullptr)
+    while(DLLcrawler->next != nullptr)
     {
         DLLcrawler = DLLcrawler->next;
     }
@@ -146,9 +147,11 @@ void MiniGit::rm(string fileName) {
     {
         // be careful, this might not work because the filenode name will have numbers in it 
         if(crawler->name == fileName)
-        {
-            if(crawler == commitHead->fileHead)
+        {   
+            if(crawler == DLLcrawler->fileHead)
             {
+                DLLcrawler->fileHead = crawler->next;
+                crawler->next = nullptr;
                 delete crawler;
             }
             else 
@@ -207,6 +210,8 @@ int MiniGit::commit(string msg)
     BranchNode* DLLcopy = new BranchNode;
     
     parse->commitMessage = msg;
+    
+    // if the new commit is the same as the most previous commit, return -1 and say that you have to try again
     if(noChanges(crawler))
     {
         delete DLLcopy;
@@ -320,23 +325,27 @@ FileNode* MiniGit::fileInDirectory(FileNode* file)
         copy->version = file->version;
         copy->next = nullptr;
         
+        // if files are NOT the same..
         if(filesAreSame(fileName, versionFile) == false)
         {
+            cout << "Files: " << fileName << " and " << versionFile << " are not the same" << endl;
+            
             copy->version = copy->version + 1;
             addToDirectory(copy);
         }
         
-        return *&copy;
+        return copy;
     }
     else
     {
+        
         FileNode* copy = new FileNode;
         copy->name = fileName;
         copy->version = file->version;
         copy->next = nullptr;
 
         addToDirectory(copy);
-        return *&copy;
+        return copy;
     }
 }
 
@@ -380,6 +389,8 @@ bool MiniGit::filesAreSame(string fileName, string directoryFileName)
             getline(directoryFile, directoryLine);
             if(currentLine != directoryLine)
             {
+                cout << "The lines of files " << fileName << " and " << directoryFileName << " don't match up" << endl;
+                cout << "Here are the lines: " << currentLine << " VS " << directoryLine << endl;
                 isSame = false;
                 break;
             }
@@ -387,6 +398,8 @@ bool MiniGit::filesAreSame(string fileName, string directoryFileName)
         
         if((currentFile.eof() != 0 && directoryFile.eof() == 0) || (currentFile.eof() == 0 && directoryFile.eof() != 0))
         {
+            cout << "One or more file is not at the end of file while the other one is" << endl;
+            cout << "Here are the file names: " << fileName << " and " << directoryFileName << endl;
             isSame = false;
         }
     }
@@ -525,3 +538,67 @@ bool MiniGit::searchCommitID(string commitID)
     }
     return isReal;
 }
+
+      /*/   EXTRA CREDIT PORTION   /*/
+
+void MiniGit::diff(FileNode* inputFile)
+{       
+    // need to compare the current file with respect to the directory
+    // to the most recent commit with the same file name within the .minigit directory
+    string versionFile = "./.minigit/ " + inputFile->name + to_string(inputFile->version);
+    
+    fstream directoryVersion (inputFile->name);
+    fstream minigitVersion (versionFile);
+    
+    string directoryLine;
+    string minigitLine;
+    
+    if(directoryVersion.is_open() && minigitVersion.is_open())
+    {
+        while(directoryVersion.eof() == 0 && minigitVersion.eof() == 0)
+        {
+            getline(directoryVersion, directoryLine);
+            getline(minigitVersion, minigitLine);
+            
+            if(directoryLine != minigitLine)
+            {
+                cout << "Difference: " << endl;
+                cout << "   " << directoryLine << endl;
+                cout << "   " << minigitLine << endl;
+                break;
+            }
+        }
+        cout << "no difference in files." << endl;
+    }
+    else 
+    {
+        cout << "one or more files are not open." << endl;
+    }
+    
+    directoryVersion.close();
+    minigitVersion.close();
+}
+
+
+FileNode* MiniGit::findFile(string fileName)
+{
+    BranchNode* DLLcrawler = commitHead;
+    
+    while(DLLcrawler->next != nullptr)
+    {
+        DLLcrawler = DLLcrawler->next;
+    }
+    
+    FileNode* crawler = DLLcrawler->fileHead;
+    
+    while(crawler->next != nullptr)
+    {
+        if(crawler->name == fileName)
+        {
+            return crawler;
+        }
+        crawler = crawler->next;
+    }
+    return nullptr;
+}
+

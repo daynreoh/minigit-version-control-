@@ -55,6 +55,8 @@ public:
     int commit(string msg);
     void checkout(string commitID);
     void printHashTable();
+    FileNode* findFile(string fileName);
+    void diff(FileNode* inputFile);
     
     
 };

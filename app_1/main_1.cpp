@@ -16,12 +16,14 @@ void displayMenu()
     cout << " 2. add " << endl;
     cout << " 3. rm " << endl;
     cout << " 4. commit " << endl;
-    cout << " 5. checkout" << endl;
-    cout << " 6. search" << endl;
+    cout << " 5. checkout " << endl;
+    cout << " 6. search " << endl;
     cout << " 7. quit " << endl;
+    cout << " 8. diff " << endl;
     cout << "+-----------------------+" << endl;
     cout << "#> ";
 }
+
 int main(int argc, char* argv[]) {
     
     MiniGit* repository = new MiniGit;
@@ -54,7 +56,7 @@ int main(int argc, char* argv[]) {
                 
                 while(!repository->searchDirectory(fileName))
                 {
-                    cout << "file does not exist, enter a different name" << endl;
+                    cout << "file does not exist in directory, enter a different name" << endl;
                     
                     cout << "please enter a file name: ";
                     cin >> fileName;
@@ -78,6 +80,15 @@ int main(int argc, char* argv[]) {
                 cout << "please enter a file name: ";
                 cin >> fileName;
                 cout << endl;
+                
+                while(!repository->searchDirectory(fileName))
+                {
+                    cout << "file does not exist in directory, enter a different name" << endl;
+                    
+                    cout << "please enter a file name: ";
+                    cin >> fileName;
+                    cout << endl;
+                }
                 
                 if(repository->traverseSLL(fileName))
                 {
@@ -169,6 +180,31 @@ int main(int argc, char* argv[]) {
             else if(numOperation == 7)
             {
                 isSeven = true;
+            }
+            else if(numOperation == 8)
+            {
+                string fileName;
+                cout << "Please enter a file name: ";
+                cin >> fileName;
+                cout << endl;
+                
+                while(!repository->searchDirectory(fileName))
+                {
+                    cout << "file does not exist, enter a different name" << endl;
+                    
+                    cout << "please enter a file name: ";
+                    cin >> fileName;
+                    cout << endl;
+                }
+                
+                if(repository->traverseSLL(fileName))
+                {
+                    repository->diff(repository->findFile(fileName));
+                }
+                else 
+                {
+                    cout << "file does not exist." << endl;
+                }
             }
             else
             {
